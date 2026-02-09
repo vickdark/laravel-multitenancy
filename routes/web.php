@@ -1,20 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Usuarios\UsuarioController;
-use App\Http\Controllers\Roles\RoleController;
-use App\Http\Controllers\Roles\PermissionController;
-use App\Http\Controllers\Profile\PasswordController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Middleware\EnsureCentralDomain;
 
-Route::middleware('central_domain')->group(function () {
+Route::middleware(EnsureCentralDomain::class)->group(function () {
     Route::get('/', WelcomeController::class);
 });
 
 // Central Management (Owner only)
-Route::prefix('central')->name('central.')->middleware('central_domain')->group(function () {
+Route::prefix('central')->name('central.')->middleware(EnsureCentralDomain::class)->group(function () {
     Route::get('/login', [App\Http\Controllers\Central\Auth\CentralLoginController::class, 'create'])->name('login');
     Route::post('/login', [App\Http\Controllers\Central\Auth\CentralLoginController::class, 'store'])->name('login.submit');
 
@@ -29,6 +24,11 @@ Route::prefix('central')->name('central.')->middleware('central_domain')->group(
     });
     
     Route::post('/logout', [App\Http\Controllers\Central\Auth\CentralLoginController::class, 'destroy'])->name('logout');
+});
+
+// Perfil y Seguridad (Universal)
+Route::middleware([EnsureCentralDomain::class, 'auth:owner'])->group(function () {
+    Route::put('/central/password-update', [\App\Http\Controllers\Profile\PasswordController::class, 'update'])->name('password.update.ajax');
 });
 
 Route::match(['get', 'post'], '/login', function () {

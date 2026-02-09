@@ -228,7 +228,7 @@ async function handleChangePassword() {
         try {
             window.Notify.loading('Actualizando contraseña...');
             
-            const response = await fetch('{{ route("password.update.ajax") }}', {
+            const response = await fetch('{{ Route::has("password.update.ajax") ? route("password.update.ajax") : "#" }}', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

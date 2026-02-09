@@ -45,6 +45,15 @@ El sistema utiliza una arquitectura de **Base de Datos por Inquilino (Single-Dat
 
 ---
 
+## 📦 Dependencias y Herramientas Adicionales
+
+Más allá de la instalación base de Laravel, este proyecto integra:
+
+*   **[stancl/tenancy](https://tenancyforlaravel.com/):** El motor principal de la multitenencia.
+*   **[barryvdh/laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper):** (Dev) Para mejorar el autocompletado y soporte del IDE.
+
+---
+
 ## ⚙️ Instalación y Puesta en Marcha
 
 ### 1. Requisitos Previos
@@ -78,6 +87,11 @@ Para que los subdominios funcionen en tu máquina local, debes editar tu archivo
 composer install
 npm install
 
+# Generar archivos de ayuda para el IDE
+php artisan ide-helper:generate
+php artisan ide-helper:models -N
+php artisan ide-helper:meta
+
 # Generar clave
 php artisan key:generate
 
@@ -106,12 +120,26 @@ npm run build
 
 ---
 
-## 🔧 Comandos Útiles
+## �🔧 Comandos Útiles de Artisan
 
+### Gestión de Inquilinos (stancl/tenancy)
+*   `php artisan tenants:migrate`: Ejecuta las migraciones en **todos** los inquilinos.
+*   `php artisan tenants:rollback`: Revierte la última migración en todos los inquilinos.
+*   `php artisan tenants:seed`: Ejecuta los seeders en todos los inquilinos.
+*   `php artisan tenants:list`: Muestra una lista de todos los inquilinos configurados.
+
+### Gestión de Permisos (Custom)
+*   `php artisan permissions:sync`: Sincroniza automáticamente las rutas del sistema (tenant) con la tabla de permisos.
+    *   `--clean`: Elimina permisos de rutas que ya no existen.
+
+### Desarrollo e IDE
+*   `php artisan ide-helper:generate`: Genera el archivo de autocompletado para clases de Laravel.
+*   `php artisan ide-helper:models`: Genera anotaciones PHPDoc para los modelos (facilita el uso de Eloquent).
+*   `php artisan ide-helper:meta`: Genera el archivo meta para PhpStorm/VSCode.
+
+### Otros Comandos
 *   **Crear un usuario administrador central:**
     *   Usa `tinker`: `\App\Models\User::create(['name'=>'Admin', 'email'=>'admin@central.com', 'password'=>bcrypt('password'), 'role_id'=>1]);`
-*   **Migrar TODOS los inquilinos:**
-    *   `php artisan tenants:migrate`
 *   **Crear un inquilino manualmente (tinker):**
     ```php
     $t = App\Models\Tenant::create(['id' => 'foo']);
